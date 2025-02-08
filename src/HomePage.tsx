@@ -1,8 +1,12 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import * as Animatable from 'react-native-animatable';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { RootStackParamList } from './types/navigation';
 
 const HomePage = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -32,7 +36,7 @@ const HomePage = () => {
         animation="fadeIn" 
         delay={2000}
       >
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Auth')}>
           <Text style={styles.mainButton}>Get Started</Text>
         </TouchableOpacity>
       </Animatable.View>
