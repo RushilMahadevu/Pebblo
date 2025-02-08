@@ -4,13 +4,14 @@ import * as Animatable from 'react-native-animatable';
 import { supabase } from './lib/supabase';
 import { useNavigation } from '@react-navigation/native';
 import { saveCredentials, loadCredentials } from './utils/storage';
+import { AuthError } from '@supabase/supabase-js';
 
 const AuthScreen = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [rememberMe, setRememberMe] = useState(true);
 
   useEffect(() => {
@@ -31,17 +32,17 @@ const AuthScreen = () => {
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
-        password,
-      }, {
-        persistSession: rememberMe
+        password
       });
+      
       if (error) throw error;
       
       // Save credentials if remember me is checked
       if (rememberMe) {
         await saveCredentials({ email, password });
       }
-    } catch (error) {
+    } catch (err) {
+      const error = err as AuthError;
       setError(error.message);
     } finally {
       setLoading(false);
@@ -58,7 +59,8 @@ const AuthScreen = () => {
       });
       if (error) throw error;
       alert('Check your email for verification link!');
-    } catch (error) {
+    } catch (err) {
+      const error = err as AuthError;
       setError(error.message);
     } finally {
       setLoading(false);
