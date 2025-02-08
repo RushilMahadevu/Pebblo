@@ -6,6 +6,7 @@ import AuthScreen from './AuthScreen';
 import Dashboard from './Dashboard';
 import Setting from './Setting';
 import Progress from './Progress';
+import Explore from './Explore';
 import { supabase } from './lib/supabase';
 import { Session } from '@supabase/supabase-js';
 
@@ -37,6 +38,13 @@ const App = () => {
             <Stack.Screen name="Dashboard" component={Dashboard} />
             <Stack.Screen name="Setting" component={Setting} />
             <Stack.Screen name="Progress" component={Progress} />
+            <Stack.Screen 
+              name="Explore" 
+              component={Explore}
+              options={{
+                headerShown: false
+              }}
+            />
           </>
         )}
       </Stack.Navigator>

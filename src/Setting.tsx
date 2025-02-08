@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { ChevronRight, User, Bell, Shield, HelpCircle, LogOut, ArrowLeft } from 'lucide-react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { supabase } from './lib/supabase';
 
 type SettingItemProps = {
   icon: any;
@@ -24,6 +25,15 @@ const SettingItem: React.FC<SettingItemProps> = ({ icon: Icon, title, onPress })
 );
 
 const Setting: React.FC<SettingsScreenProps> = ({ navigation }) => {
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -62,7 +72,7 @@ const Setting: React.FC<SettingsScreenProps> = ({ navigation }) => {
 
         <TouchableOpacity 
           style={styles.logoutButton}
-          onPress={() => {}}
+          onPress={handleLogout}
         >
           <LogOut size={22} color="#FF3B30" />
           <Text style={styles.logoutText}>Log Out</Text>

@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Animated, SafeAreaView } from "react-native";
 import { Target, Activity, Users, CheckCircle, Home, TrendingUp, Settings } from "lucide-react-native";
 import type { LucideIcon } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 
 interface ActionCardProps {
   icon: LucideIcon;
@@ -29,6 +30,11 @@ const Dashboard: React.FC<{ navigation: any }> = ({ navigation }) => {
     <TouchableOpacity 
       style={styles.card} 
       activeOpacity={0.7}
+      onPress={() => {
+        if (title === 'Explore Challenges') {
+          navigation.navigate('Explore');
+        }
+      }}
     >
       <View style={styles.iconContainer}>
         <Icon color="#333333" size={24} />
@@ -120,13 +126,13 @@ const styles = StyleSheet.create({
   header: {
     marginTop: 15,
     paddingHorizontal: 20,
-    marginBottom: 30,
+    marginBottom: 35,
   },
   welcomeText: {
     fontSize: 28,
     fontWeight: "700",
     color: "#333333",
-    marginBottom: 4,
+    marginBottom: 8,
   },
   headerSubtitle: {
     fontSize: 16,

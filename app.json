@@ -14,12 +14,16 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.pebblo"
+      "bundleIdentifier": "com.anonymous.pebblo",
+      "runtimeVersion": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
       }
     },
     "web": {
@@ -30,6 +34,9 @@
         "projectId": "0bab7f26-e6f5-40e9-b58a-b6621b02d768"
       }
     },
-    "owner": "rushilmahadevu"
+    "owner": "rushilmahadevu",
+    "updates": {
+      "url": "https://u.expo.dev/0bab7f26-e6f5-40e9-b58a-b6621b02d768"
+    }
   }
 }
