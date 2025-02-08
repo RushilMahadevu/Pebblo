@@ -24,6 +24,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0bab7f26-e6f5-40e9-b58a-b6621b02d768"
+      }
+    },
+    "owner": "rushilmahadevu"
   }
 }

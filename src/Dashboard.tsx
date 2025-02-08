@@ -14,7 +14,7 @@ interface FooterItemProps {
   isActive?: boolean;
 }
 
-const Dashboard: React.FC = () => {
+const Dashboard: React.FC<{ navigation: any }> = ({ navigation }) => {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
@@ -38,7 +38,16 @@ const Dashboard: React.FC = () => {
   );
 
   const renderFooterItem = ({ icon: Icon, label, isActive }: FooterItemProps) => (
-    <TouchableOpacity style={styles.footerItem}>
+    <TouchableOpacity 
+      style={styles.footerItem}
+      onPress={() => {
+        if (label === 'Settings') {
+          navigation.navigate('Setting');
+        } else if (label === 'Progress') {
+          navigation.navigate('Progress');
+        }
+      }}
+    >
       <Icon color={isActive ? "#333333" : "#999999"} size={24} />
       <Text style={[styles.footerText, isActive && styles.footerTextActive]}>
         {label}
@@ -52,9 +61,9 @@ const Dashboard: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.welcomeText}>Welcome Back 👋</Text>
-          <Text style={styles.headerSubtitle}>
-            Your daily impact journey awaits
-          </Text>
+            <Text style={styles.headerSubtitle}>
+            Small steps, big impact.
+            </Text>
         </View>
 
         {/* Action Cards */}
@@ -102,14 +111,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8F9FA",
+    justifyContent: 'space-between', // Fixes this footer took forever 😭
   },
   content: {
     flex: 1,
     paddingTop: 20,
   },
   header: {
+    marginTop: 15,
     paddingHorizontal: 20,
-    marginBottom: 24,
+    marginBottom: 30,
   },
   welcomeText: {
     fontSize: 28,
@@ -190,16 +201,21 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    paddingVertical: 16,
+    paddingVertical: 18,
     borderTopWidth: 1,
     borderTopColor: "#EEEEEE",
     backgroundColor: "#FFFFFF",
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   footerItem: {
     alignItems: "center",
   },
   footerText: {
-    fontSize: 12,
+    marginBottom: 6,
+    fontSize: 14,
     color: "#8E8E93",
     marginTop: 4,
   },
