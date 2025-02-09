@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     marginBottom: 35,
   },
   welcomeText: {
+    fontFamily: "Inter-ExtraBold",
     fontSize: 28,
     fontWeight: "700",
     color: "#333333",
@@ -138,6 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#666666",
     fontWeight: "500",
+    fontFamily: "Inter-Medium",
   },
   categories: {
     paddingHorizontal: 20,
@@ -164,6 +166,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "600",
     color: "#1A1A1A",
+    fontFamily: "Inter-SemiBold",
   },
   challengeCard: {
     backgroundColor: "#FFFFFF",
@@ -186,12 +189,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#1A1A1A",
     marginLeft: 12,
+    fontFamily: "Inter-Bold",
   },
   challengeDescription: {
     fontSize: 16,
     color: "#666666",
     lineHeight: 24,
     marginBottom: 20,
+    fontFamily: "Inter-Regular",
   },
   completeButton: {
     backgroundColor: "#4A90E2",
@@ -203,6 +208,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
+    fontFamily: "Inter-SemiBold",
   },
   footer: {
     flexDirection: "row",
@@ -224,10 +230,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#8E8E93",
     marginTop: 4,
+    fontFamily: "Inter-Regular",
   },
   footerTextActive: { 
-    color: "#4A90E2",
+    color: "#1A1A1A",
     fontWeight: "500",
+    fontFamily: "Inter-Medium",
   },
 });
 

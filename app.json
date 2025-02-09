@@ -37,6 +37,23 @@
     "owner": "rushilmahadevu",
     "updates": {
       "url": "https://u.expo.dev/0bab7f26-e6f5-40e9-b58a-b6621b02d768"
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ],
+    "fonts": [
+      {
+        "asset": "./assets/fonts/Satoshi-Light.otf"
+      },
+      {
+        "asset": "./assets/fonts/Satoshi-Regular.otf"
+      },
+      {
+        "asset": "./assets/fonts/Satoshi-Medium.otf"
+      },
+      {
+        "asset": "./assets/fonts/Satoshi-Bold.otf"
+      }
+    ]
   }
 }

@@ -9,13 +9,26 @@ import Progress from './Progress';
 import Explore from './Explore';
 import { supabase } from './lib/supabase';
 import { Session } from '@supabase/supabase-js';
+import { useFonts } from './useFonts';
+import { View, ActivityIndicator } from 'react-native';
 
 const Stack = createNativeStackNavigator();
 
 const App = () => {
   const [session, setSession] = useState<Session | null>(null);
+  const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
+    async function prepare() {
+      try {
+        await useFonts();
+        setAppIsReady(true);
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+    prepare();
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
@@ -24,6 +37,14 @@ const App = () => {
       setSession(session);
     });
   }, []);
+
+  if (!appIsReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
