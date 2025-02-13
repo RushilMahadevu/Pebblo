@@ -1,114 +1,180 @@
-import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from "react-native";
-import { NavigationProp, ParamListBase } from '@react-navigation/native';
-import { Smile, Trees, Heart, Globe, LucideIcon, ArrowLeft } from "lucide-react-native";
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
+import { Search, ArrowLeft, Leaf, Droplets, Zap, Radio, Timer, Award } from 'lucide-react-native';
+import { useNavigation } from '@react-navigation/native';
 
-type CategoryType = {
-  id: string;
-  title: string;
-  description: string;
-  Icon: LucideIcon;
-};
-
-interface ExploreProps {
-  navigation: NavigationProp<ParamListBase>;
+interface CategoryProps {
+  icon: any;
+  label: string;
+  color: string;
 }
 
-const CHALLENGE_CATEGORIES: CategoryType[] = [
-  {
-    id: 'personal-growth',
-    title: "Personal Growth",
-    Icon: Smile,
-    description: "Build habits and grow every day"
-  },
-  {
-    id: 'environmental',
-    title: "Environmental Action",
-    Icon: Trees,
-    description: "Make a positive impact on nature"
-  },
-  {
-    id: 'kindness',
-    title: "Kindness & Relationships",
-    Icon: Heart,
-    description: "Strengthen bonds and spread love"
-  },
-  {
-    id: 'global',
-    title: "Global Impact",
-    Icon: Globe,
-    description: "Contribute to worldwide causes"
-  },
-];
+interface ChallengeCardProps {
+  title: string;
+  description: string;
+  category: string;
+  duration: string;
+}
 
-const NavigationHeader: React.FC<{ onBack: () => void }> = ({ onBack }) => (
-  <View style={styles.navigationHeader}>
-    <View style={styles.navigationLeft}>
-      <TouchableOpacity 
-        onPress={onBack}
-        style={styles.backButton}
-        hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-      >
-        <ArrowLeft color="#333333" size={24} />
-      </TouchableOpacity>
-      <Text style={styles.navigationTitle}>Explore</Text>
-    </View>
-  </View>
-);
+interface DifficultyLevel {
+  label: string;
+  color: string;
+}
 
-const CategoryCard: React.FC<{
-  category: CategoryType;
-  onPress: () => void;
-}> = ({ category, onPress }) => {
-  const { Icon, title, description } = category;
-  
-  return (
-    <TouchableOpacity 
-      style={styles.card} 
-      activeOpacity={0.7}
-      onPress={onPress}
+const Explore: React.FC = () => {
+  const navigation = useNavigation();
+  const [activeCategory, setActiveCategory] = React.useState('All');
+  const [activeDifficulty, setActiveDifficulty] = React.useState('All');
+
+  const difficulties: DifficultyLevel[] = [
+    { label: 'All', color: '#007AFF' },
+    { label: 'Easy', color: '#4CAF50' },
+    { label: 'Medium', color: '#FF9800' },
+    { label: 'Hard', color: '#F44336' },
+  ];
+
+  const categories: CategoryProps[] = [
+    { icon: Radio, label: 'All', color: '#4A90E2' },
+    { icon: Leaf, label: 'Nature', color: '#4CAF50' },
+    { icon: Droplets, label: 'Water', color: '#2196F3' },
+    { icon: Zap, label: 'Energy', color: '#FFC107' },
+  ];
+
+  const challenges: ChallengeCardProps[] = [
+    {
+      title: 'Mindful Walking',
+      description: 'Take a 15-minute nature walk without any devices',
+      category: 'Nature',
+      duration: '15 mins',
+    },
+    {
+      title: 'Save Water',
+      description: 'Reduce shower time by 2 minutes',
+      category: 'Water',
+      duration: '2 mins',
+    },
+    {
+      title: 'Energy Saver',
+      description: 'Unplug unused electronics for 1 hour',
+      category: 'Energy',
+      duration: '1 hour',
+    },
+  ];
+
+  const renderCategory = ({ icon: Icon, label, color }: CategoryProps) => (
+    <TouchableOpacity
+      style={[
+        styles.categoryButton,
+        activeCategory === label && { backgroundColor: color + '20' },
+      ]}
+      onPress={() => setActiveCategory(label)}
     >
-      <View style={styles.iconContainer}>
-        <Icon color="#333333" size={24} />
+      <Icon size={20} color={color} />
+      <Text style={[styles.categoryText, { color }]}>{label}</Text>
+    </TouchableOpacity>
+  );
+
+  const renderDifficultyFilter = ({ label, color }: DifficultyLevel) => (
+    <TouchableOpacity 
+      style={[
+        styles.filterChip,
+        activeDifficulty === label && { backgroundColor: color },
+      ]}
+      onPress={() => setActiveDifficulty(label)}
+    >
+      <Text style={[
+        styles.filterText,
+        activeDifficulty === label && styles.activeFilterText
+      ]}>
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const renderChallengeCard = ({ title, description, category, duration }: ChallengeCardProps) => (
+    <TouchableOpacity style={styles.challengeCard}>
+      <View style={styles.challengeHeader}>
+        <View style={styles.challengeTitleSection}>
+          <Text style={styles.challengeTitle}>{title}</Text>
+          <View style={styles.difficultyBadge}>
+            <Text style={styles.difficultyText}>Easy</Text>
+          </View>
+        </View>
+        <View style={styles.pointsBadge}>
+          <Award size={16} color="#FF9800" />
+          <Text style={styles.pointsText}>+10</Text>
+        </View>
       </View>
-      <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{title}</Text>
-        <Text style={styles.cardDescription}>{description}</Text>
+
+      <Text style={styles.challengeDescription}>{description}</Text>
+      
+      <View style={styles.metaContainer}>
+        <View style={styles.metaItem}>
+          <Timer size={16} color="#666666" />
+          <Text style={styles.metaText}>{duration}</Text>
+        </View>
+        <View style={[styles.categoryBadge, { backgroundColor: '#E3F2FD' }]}>
+          <Text style={styles.categoryBadgeText}>{category}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
-};
-
-const ExploreChallenges: React.FC<ExploreProps> = ({ navigation }) => {
-  const handleCategoryPress = (categoryId: string) => {
-    navigation.navigate('CategoryDetails', { categoryId });
-  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <NavigationHeader onBack={() => navigation.goBack()} />
-      <View style={styles.content}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerSubtitle}>
-            Find a challenge that inspires you today
-          </Text>
-        </View>
-
-        {/* Categories List */}
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.categoriesList}
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
         >
-          {CHALLENGE_CATEGORIES.map((category) => (
-            <CategoryCard
-              key={category.id}
-              category={category}
-              onPress={() => handleCategoryPress(category.id)}
-            />
-          ))}
-        </ScrollView>
+          <ArrowLeft size={24} color="#333333" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Explore Challenges</Text>
       </View>
+
+      <View style={styles.searchContainer}>
+        <Search size={20} color="#666666" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search challenges..."
+          placeholderTextColor="#666666"
+        />
+      </View>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.filtersContainer}
+      >
+        {difficulties.map((difficulty, index) => (
+          <View key={index} style={styles.filterItem}>
+            {renderDifficultyFilter(difficulty)}
+          </View>
+        ))}
+      </ScrollView>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.categoriesContainer}
+      >
+        {categories.map((category, index) => (
+          <View key={index} style={styles.categoryItem}>
+            {renderCategory(category)}
+          </View>
+        ))}
+      </ScrollView>
+
+      <ScrollView 
+        style={styles.challengesContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {challenges.map((challenge, index) => (
+          <View key={index}>
+            {renderChallengeCard(challenge)}
+          </View>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -116,94 +182,210 @@ const ExploreChallenges: React.FC<ExploreProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F8F9FA",
-  },
-  navigationHeader: {
-    marginTop: 25,
-    paddingHorizontal: 20,
-    marginBottom: 15,
-  },
-  navigationLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12, // Add spacing between back button and title
-  },
-  navigationTitle: {
-    fontFamily: "Inter-ExtraBold",
-    fontSize: 28,
-    fontWeight: "700",
-    color: "#333333",
-    marginBottom: 0, // Remove bottom margin since we're using gap
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 20,
-    backgroundColor: '#FFFFFF', // Add background color
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
+    backgroundColor: '#F8F9FA',
   },
   header: {
-    paddingTop: 4,
-    paddingBottom: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    paddingTop: 10,
   },
   headerTitle: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: "#333333",
-    marginBottom: 8,
-    letterSpacing: -0.5,
+    fontSize: 24,
+    fontWeight: '700',
+    marginLeft: 16,
+    fontFamily: 'Inter-Bold',
+    color: '#333333',
   },
-  headerSubtitle: {
-    fontSize: 16,
-    color: "#666666",
-    fontWeight: "500",
+  backButton: {
+    padding: 8,
   },
-  categoriesList: {
-    paddingBottom: 20,
-  },
-  card: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: "#000",
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    margin: 20,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 2,
   },
-  iconContainer: {
-    padding: 12,
-    backgroundColor: "#F8F9FA",
+  searchIcon: {
+    marginRight: 12,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    color: '#333333',
+    marginLeft: 8,
+  },
+  filtersContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 12,
+  },
+  filterItem: {
+    marginRight: 8,
+  },
+  filterChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#F5F5F5',
+  },
+  filterText: {
+    color: '#666666',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  activeFilterText: {
+    color: '#FFFFFF',
+  },
+  categoriesContainer: {
+    paddingHorizontal: 12,
+  },
+  categoryItem: {
+    marginHorizontal: 8,
+  },
+  categoryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  categoryText: {
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
+  },
+  challengesContainer: {
+    padding: 20,
+  },
+  challengeCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  challengeHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  challengeTitleSection: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  challengeTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#333333',
+    fontFamily: 'Inter-Bold',
+  },
+  challengeDescription: {
+    fontSize: 14,
+    color: '#666666',
+    marginBottom: 12,
+    fontFamily: 'Inter-Regular',
+  },
+  difficultyBadge: {
+    backgroundColor: '#E8F5E9',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginLeft: 8,
+  },
+  difficultyText: {
+    color: '#4CAF50',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  pointsBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF3E0',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  pointsText: {
+    color: '#FF9800',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  tagContainer: {
+    backgroundColor: '#F0F0F0',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  tagText: {
+    fontSize: 12,
+    color: '#666666',
+    fontFamily: 'Inter-Medium',
+  },
+  metaContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    gap: 8,
+  },
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 6,
+  },
+  metaText: {
+    fontSize: 13,
+    color: '#666666',
+  },
+  categoryBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  categoryBadgeText: {
+    color: '#1976D2',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  categoryTag: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#4A90E220',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
     borderRadius: 12,
   },
-  cardContent: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  cardTitle: {
-    fontSize: 17,
-    fontWeight: "600",
-    color: "#333333",
-    marginBottom: 4,
-  },
-  cardDescription: {
-    fontSize: 14,
-    color: "#666666",
-    lineHeight: 20,
+  categoryTagText: {
+    color: '#4A90E2',
+    fontSize: 12,
+    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
   },
 });
 
-export default ExploreChallenges;
+export default Explore;
