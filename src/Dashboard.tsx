@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Animated, SafeAreaView } from "react-native";
-import { Target, Activity, Users, CheckCircle, Home, TrendingUp, Settings } from "lucide-react-native";
+import { Telescope, Earth, UsersRound, CheckCircle, Home, TrendingUp, Settings } from "lucide-react-native";
 import type { LucideIcon } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -37,7 +37,7 @@ const Dashboard: React.FC<{ navigation: any }> = ({ navigation }) => {
       }}
     >
       <View style={styles.iconContainer}>
-        <Icon color="#333333" size={24} />
+        <Icon color="#3E3E3E" size={28} />
       </View>
       <Text style={styles.cardTitle}>{title}</Text>
     </TouchableOpacity>
@@ -45,7 +45,7 @@ const Dashboard: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const renderFooterItem = ({ icon: Icon, label, isActive }: FooterItemProps) => (
     <TouchableOpacity 
-      style={styles.footerItem}
+      style={[styles.footerItem, isActive && styles.footerItemActive]}
       onPress={() => {
         if (label === 'Settings') {
           navigation.navigate('Setting');
@@ -54,7 +54,7 @@ const Dashboard: React.FC<{ navigation: any }> = ({ navigation }) => {
         }
       }}
     >
-      <Icon color={isActive ? "#333333" : "#999999"} size={24} />
+      <Icon color={isActive ? "#007AFF" : "#999999"} size={24} />
       <Text style={[styles.footerText, isActive && styles.footerTextActive]}>
         {label}
       </Text>
@@ -64,46 +64,30 @@ const Dashboard: React.FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        {/* Header */}
         <View style={styles.header}>
           <Text style={styles.welcomeText}>Welcome Back 👋</Text>
-            <Text style={styles.headerSubtitle}>
-            Small steps, big impact.
-            </Text>
+          <Text style={styles.headerSubtitle}>Small steps, big impact.</Text>
         </View>
-
-        {/* Action Cards */}
+        
         <View style={styles.categories}>
-          {renderActionCard({ 
-            icon: Target, 
-            title: "Explore Challenges"
-          })}
-          {renderActionCard({ 
-            icon: Activity, 
-            title: "Impact Overview"
-          })}
-          {renderActionCard({ 
-            icon: Users, 
-            title: "Community"
-          })}
+          {renderActionCard({ icon: Telescope, title: "Explore Challenges" })}
+          {renderActionCard({ icon: Earth, title: "Impact Overview" })}
+          {renderActionCard({ icon: UsersRound, title: "Community" })}
         </View>
-
-        {/* Today's Challenge */}
-        <Animated.View style={[styles.challengeCard, { opacity: fadeAnim }]}>
-          <View style={styles.challengeHeader}>
-            <CheckCircle color="#333333" size={24} />
-            <Text style={styles.challengeTitle}>Today's Challenge</Text>
+        
+        <Animated.View style={[styles.challengeCard, { opacity: fadeAnim }]}>  
+          <Text style={styles.challengeTitle}>Today's Challenge</Text>
+          <Text style={styles.challengeDescription}>Take a 15-minute walk to reflect on nature</Text>
+          <View style={styles.challengeMetaContainer}>
+            <Text style={styles.challengeMeta}>🕒 15 min</Text>
+            <Text style={styles.challengeMeta}>🌟 10 points</Text>
           </View>
-          <Text style={styles.challengeDescription}>
-            Take a 15-minute walk to reflect on nature 🌳
-          </Text>
           <TouchableOpacity style={styles.completeButton}>
             <Text style={styles.completeButtonText}>Complete Challenge</Text>
           </TouchableOpacity>
         </Animated.View>
       </View>
-
-      {/* Bottom Tab Navigation */}
+      
       <View style={styles.footer}>
         {renderFooterItem({ icon: Home, label: "Home", isActive: true })}
         {renderFooterItem({ icon: TrendingUp, label: "Progress" })}
@@ -117,48 +101,44 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F8F9FA",
-    justifyContent: 'space-between', // Fixes this footer took forever 😭
+    justifyContent: 'space-between',
   },
   content: {
     flex: 1,
+    paddingHorizontal: 20,
     paddingTop: 20,
   },
   header: {
-    marginTop: 15,
-    paddingHorizontal: 20,
-    marginBottom: 35,
+    marginBottom: 30,
   },
   welcomeText: {
-    fontFamily: "Inter-ExtraBold",
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: "700",
     color: "#333333",
-    marginBottom: 8,
   },
   headerSubtitle: {
     fontSize: 16,
     color: "#666666",
     fontWeight: "500",
-    fontFamily: "Inter-Medium",
   },
   categories: {
-    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   card: {
     backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
-    flexDirection: "row" as const,
+    flexDirection: "row",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
+    shadowRadius: 4,
     elevation: 3,
   },
   iconContainer: {
-    padding: 12,
+    padding: 10,
     borderRadius: 12,
     marginRight: 12,
   },
@@ -166,49 +146,42 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "600",
     color: "#1A1A1A",
-    fontFamily: "Inter-SemiBold",
   },
   challengeCard: {
     backgroundColor: "#FFFFFF",
-    margin: 20,
     borderRadius: 20,
-    padding: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-  challengeHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
+    padding: 20,
+    marginBottom: 20,
   },
   challengeTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "700",
-    color: "#1A1A1A",
-    marginLeft: 12,
-    fontFamily: "Inter-Bold",
+    marginBottom: 8,
   },
   challengeDescription: {
     fontSize: 16,
-    color: "#666666",
-    lineHeight: 24,
-    marginBottom: 20,
-    fontFamily: "Inter-Regular",
+    color: "#4A4A4A",
+    marginBottom: 16,
+  },
+  challengeMetaContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  challengeMeta: {
+    fontSize: 14,
+    color: "#666",
   },
   completeButton: {
-    backgroundColor: "#4A90E2",
+    backgroundColor: "#007AFF",
     paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 16,
     alignItems: "center",
   },
   completeButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "600",
-    fontFamily: "Inter-SemiBold",
   },
   footer: {
     flexDirection: "row",
@@ -221,22 +194,23 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    marginBottom: 15,
   },
   footerItem: {
     alignItems: "center",
   },
+  footerItemActive: {
+    opacity: 1,
+  },
   footerText: {
-    marginBottom: 6,
     fontSize: 14,
-    color: "#8E8E93",
-    marginTop: 4,
-    fontFamily: "Inter-Regular",
+    color: "#999999",
   },
   footerTextActive: { 
-    color: "#1A1A1A",
+    color: "#007AFF",
     fontWeight: "500",
-    fontFamily: "Inter-Medium",
   },
 });
+
 
 export default Dashboard;

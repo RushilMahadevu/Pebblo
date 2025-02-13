@@ -119,26 +119,34 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F9FA",
   },
   navigationHeader: {
-    paddingHorizontal: 8,
-    height: 56,
-    justifyContent: 'center',
-    backgroundColor: '#F8F9FA',
+    marginTop: 25,
+    paddingHorizontal: 20,
+    marginBottom: 15,
   },
   navigationLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 12, // Add spacing between back button and title
   },
   navigationTitle: {
+    fontFamily: "Inter-ExtraBold",
     fontSize: 28,
-    fontWeight: '700',
-    color: '#333',
+    fontWeight: "700",
+    color: "#333333",
+    marginBottom: 0, // Remove bottom margin since we're using gap
   },
   backButton: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 22,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF', // Add background color
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   content: {
     flex: 1,
