@@ -11,6 +11,7 @@ import { supabase } from './lib/supabase';
 import { Session } from '@supabase/supabase-js';
 import { useFonts } from './useFonts';
 import { View, ActivityIndicator } from 'react-native';
+import AccountSettings from './screens/AccountSettings';
 
 const Stack = createNativeStackNavigator();
 
@@ -66,6 +67,8 @@ const App = () => {
                 headerShown: false
               }}
             />
+            <Stack.Screen name="AccountSettings" component={AccountSettings} />
+            {/* Add other settings screens here */}
           </>
         )}
       </Stack.Navigator>

@@ -15,9 +15,11 @@ type SettingsScreenProps = {
 };
 
 const SettingItem: React.FC<SettingItemProps> = ({ icon: Icon, title, onPress }) => (
-  <TouchableOpacity style={styles.settingItem} onPress={onPress}>
+  <TouchableOpacity style={styles.settingItem} onPress={onPress} activeOpacity={0.7}>
     <View style={styles.settingItemLeft}>
-      <Icon size={22} color="#333" />
+      <View style={styles.iconContainer}>
+        <Icon size={24} color="#3E3E3E" />
+      </View>
       <Text style={styles.settingItemText}>{title}</Text>
     </View>
     <ChevronRight size={20} color="#999" />
@@ -28,7 +30,10 @@ const Setting: React.FC<SettingsScreenProps> = ({ navigation }) => {
   const handleLogout = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
+      // The session change will automatically trigger navigation via App.tsx
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -51,22 +56,22 @@ const Setting: React.FC<SettingsScreenProps> = ({ navigation }) => {
           <SettingItem 
             icon={User} 
             title="Account" 
-            onPress={() => {}} 
+            onPress={() => navigation.navigate('AccountSettings')} 
           />
           <SettingItem 
             icon={Bell} 
             title="Notifications" 
-            onPress={() => {}} 
+            onPress={() => navigation.navigate('NotificationSettings')} 
           />
           <SettingItem 
             icon={Shield} 
             title="Privacy" 
-            onPress={() => {}} 
+            onPress={() => navigation.navigate('PrivacySettings')} 
           />
           <SettingItem 
             icon={HelpCircle} 
             title="Help & Support" 
-            onPress={() => {}} 
+            onPress={() => navigation.navigate('HelpSupport')} 
           />
         </View>
 
@@ -85,59 +90,62 @@ const Setting: React.FC<SettingsScreenProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: '#FFFFFF',
   },
   header: {
-    padding: 20,
-    paddingTop: 15,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 16,
   },
   backButton: {
-    marginRight: 16,
+    marginRight: 12,
     padding: 4,
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#333',
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#333333',
   },
   section: {
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    marginHorizontal: 20,
-    marginTop: 10,
-    padding: 8,
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginTop: -8, // Reduce gap between header and items
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
+    paddingVertical: 14,
+    backgroundColor: '#FFFFFF',
   },
   settingItemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+  iconContainer: {
+    marginRight: 12,
+  },
   settingItemText: {
     fontSize: 16,
-    marginLeft: 12,
-    color: '#333',
+    fontWeight: '500',
+    color: '#333333',
   },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFF',
-    marginHorizontal: 20,
-    marginTop: 20,
-    padding: 16,
-    borderRadius: 12,
+    marginHorizontal: 16,
+    marginTop: 24,
+    padding: 14,
+    borderRadius: 8,
+    backgroundColor: '#FEF2F2',
   },
   logoutText: {
-    color: '#FF3B30',
-    fontSize: 16,
-    fontWeight: '600',
+    color: '#DC2626',
+    fontSize: 15,
+    fontWeight: '500',
     marginLeft: 8,
   },
 });
