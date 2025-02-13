@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, SafeAreaView } from 'react-native';
-import { Search, ArrowLeft, Leaf, Droplets, Zap, Radio, Timer, Award } from 'lucide-react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Modal } from 'react-native';
+import { Search, ArrowLeft, Leaf, Droplets, Zap, Radio, Timer, Award, SlidersHorizontal, Check } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 
 interface CategoryProps {
@@ -23,8 +23,14 @@ interface DifficultyLevel {
 
 const Explore: React.FC = () => {
   const navigation = useNavigation();
-  const [activeCategory, setActiveCategory] = React.useState('All');
-  const [activeDifficulty, setActiveDifficulty] = React.useState('All');
+  const [showFilters, setShowFilters] = React.useState(false);
+  const [filters, setFilters] = React.useState({
+    duration: 'Any',
+    points: 'Any',
+    status: 'Any',
+    difficulty: 'All',
+    category: 'All'
+  });
 
   const difficulties: DifficultyLevel[] = [
     { label: 'All', color: '#007AFF' },
@@ -61,13 +67,19 @@ const Explore: React.FC = () => {
     },
   ];
 
+  const filterOptions = {
+    duration: ['Any', '5 mins', '15 mins', '30 mins', '1 hour'],
+    points: ['Any', '5+', '10+', '20+', '50+'],
+    status: ['Any', 'Not Started', 'In Progress', 'Completed']
+  };
+
   const renderCategory = ({ icon: Icon, label, color }: CategoryProps) => (
     <TouchableOpacity
       style={[
         styles.categoryButton,
-        activeCategory === label && { backgroundColor: color + '20' },
+        filters.category === label && { backgroundColor: color + '20' },
       ]}
-      onPress={() => setActiveCategory(label)}
+      onPress={() => setFilters({...filters, category: label})}
     >
       <Icon size={20} color={color} />
       <Text style={[styles.categoryText, { color }]}>{label}</Text>
@@ -78,13 +90,13 @@ const Explore: React.FC = () => {
     <TouchableOpacity 
       style={[
         styles.filterChip,
-        activeDifficulty === label && { backgroundColor: color },
+        filters.difficulty === label && { backgroundColor: color },
       ]}
-      onPress={() => setActiveDifficulty(label)}
+      onPress={() => setFilters({...filters, difficulty: label})}
     >
       <Text style={[
         styles.filterText,
-        activeDifficulty === label && styles.activeFilterText
+        filters.difficulty === label && styles.activeFilterText
       ]}>
         {label}
       </Text>
@@ -120,6 +132,135 @@ const Explore: React.FC = () => {
     </TouchableOpacity>
   );
 
+  const renderFilterDropdown = () => (
+    <Modal
+      visible={showFilters}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={() => setShowFilters(false)}
+    >
+      <TouchableOpacity 
+        style={styles.modalOverlay}
+        activeOpacity={1} 
+        onPress={() => setShowFilters(false)}
+      >
+        <View style={styles.filterDropdown}>
+          <View style={styles.filterSection}>
+            <Text style={styles.filterTitle}>Difficulty</Text>
+            <View style={styles.optionsContainer}>
+              {difficulties.map((difficulty) => (
+                <TouchableOpacity
+                  key={difficulty.label}
+                  style={[
+                    styles.filterOption,
+                    filters.difficulty === difficulty.label && {
+                      backgroundColor: `${difficulty.color}20`
+                    }
+                  ]}
+                  onPress={() => setFilters({...filters, difficulty: difficulty.label})}
+                >
+                  <Text style={[
+                    styles.filterOptionText,
+                    filters.difficulty === difficulty.label && {
+                      color: difficulty.color,
+                      fontWeight: '600'
+                    }
+                  ]}>{difficulty.label}</Text>
+                  {filters.difficulty === difficulty.label && (
+                    <Check size={16} color={difficulty.color} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.filterDivider} />
+
+          <View style={styles.filterSection}>
+            <Text style={styles.filterTitle}>Category</Text>
+            <View style={styles.optionsContainer}>
+              {categories.map(({label, color}) => (
+                <TouchableOpacity
+                  key={label}
+                  style={[
+                    styles.filterOption,
+                    filters.category === label && {
+                      backgroundColor: `${color}20`
+                    }
+                  ]}
+                  onPress={() => setFilters({...filters, category: label})}
+                >
+                  <Text style={[
+                    styles.filterOptionText,
+                    filters.category === label && {
+                      color: color,
+                      fontWeight: '600'
+                    }
+                  ]}>{label}</Text>
+                  {filters.category === label && (
+                    <Check size={16} color={color} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.filterDivider} />
+
+          <View style={styles.filterSection}>
+            <Text style={styles.filterTitle}>Duration</Text>
+            <View style={styles.optionsContainer}>
+              {filterOptions.duration.map((option) => (
+                <TouchableOpacity
+                  key={option}
+                  style={[
+                    styles.filterOption,
+                    filters.duration === option && styles.selectedOption
+                  ]}
+                  onPress={() => setFilters({...filters, duration: option})} // ... filters essentialy creates new changes
+                >
+                  <Text style={[
+                    styles.filterOptionText,
+                    filters.duration === option && styles.selectedOptionText
+                  ]}>{option}</Text>
+                  {filters.duration === option && (
+                    <Check size={16} color="#007AFF" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.filterDivider} />
+
+          <View style={styles.filterSection}>
+            <Text style={styles.filterTitle}>Points</Text>
+            <View style={styles.optionsContainer}>
+              {filterOptions.points.map((option) => ( // Map renders each option in the array
+                <TouchableOpacity
+                  key={option}
+                  style={[
+                    styles.filterOption,
+                    filters.points === option && styles.selectedOption
+                  ]}
+                  onPress={() => setFilters({...filters, points: option})}
+                >
+                  <Text style={[
+                    styles.filterOptionText,
+                    filters.points === option && styles.selectedOptionText // If the filter is selected, change the text color
+                  ]}>{option}</Text>
+                  {filters.points === option && (
+                    <Check size={16} color="#007AFF" />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </Modal>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -133,37 +274,23 @@ const Explore: React.FC = () => {
       </View>
 
       <View style={styles.searchContainer}>
-        <Search size={20} color="#666666" style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search challenges..."
-          placeholderTextColor="#666666"
-        />
+        <View style={styles.searchInputWrapper}>
+          <Search size={20} color="#666666" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search challenges..."
+            placeholderTextColor="#666666"
+          />
+        </View>
+        <TouchableOpacity 
+          style={styles.filterButton}
+          onPress={() => setShowFilters(true)}
+        >
+          <SlidersHorizontal size={20} color="#666666" />
+        </TouchableOpacity>
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.filtersContainer}
-      >
-        {difficulties.map((difficulty, index) => (
-          <View key={index} style={styles.filterItem}>
-            {renderDifficultyFilter(difficulty)}
-          </View>
-        ))}
-      </ScrollView>
-
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.categoriesContainer}
-      >
-        {categories.map((category, index) => (
-          <View key={index} style={styles.categoryItem}>
-            {renderCategory(category)}
-          </View>
-        ))}
-      </ScrollView>
+      {renderFilterDropdown()}
 
       <ScrollView 
         style={styles.challengesContainer}
@@ -191,10 +318,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 26,  // Increased from 24
     fontWeight: '700',
     marginLeft: 16,
-    fontFamily: 'Inter-Bold',
     color: '#333333',
   },
   backButton: {
@@ -203,16 +329,22 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     margin: 20,
-    borderRadius: 12,
+    gap: 12,
+  },
+  searchInputWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16, // Increased from 12
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14, // Increased from 12
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   searchIcon: {
     marginRight: 12,
@@ -224,51 +356,15 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginLeft: 8,
   },
-  filtersContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 12,
-  },
-  filterItem: {
-    marginRight: 8,
-  },
-  filterChip: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#F5F5F5',
-  },
-  filterText: {
-    color: '#666666',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  activeFilterText: {
-    color: '#FFFFFF',
-  },
-  categoriesContainer: {
-    paddingHorizontal: 12,
-  },
-  categoryItem: {
-    marginHorizontal: 8,
-  },
-  categoryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
+  filterButton: {
     backgroundColor: '#FFFFFF',
+    padding: 14, // Increased from 12
+    borderRadius: 16, // Increased from 12
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  categoryText: {
-    marginLeft: 8,
-    fontSize: 14,
-    fontWeight: '600',
-    fontFamily: 'Inter-SemiBold',
+    shadowRadius: 4,
+    elevation: 3,
   },
   challengesContainer: {
     padding: 20,
@@ -276,13 +372,13 @@ const styles = StyleSheet.create({
   challengeCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    padding: 16,
+    padding: 20, // Increased from 16
     marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   challengeHeader: {
     flexDirection: 'row',
@@ -296,23 +392,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   challengeTitle: {
-    fontSize: 18,
+    fontSize: 20, // Increased from 18
     fontWeight: '700',
-    color: '#333333',
-    fontFamily: 'Inter-Bold',
+    color: '#1A1A1A', // Darker color
   },
   challengeDescription: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 12,
-    fontFamily: 'Inter-Regular',
+    fontSize: 16, // Increased from 14
+    color: '#4A4A4A', // Adjusted color
+    marginBottom: 16, // Increased from 12
+    lineHeight: 22,
   },
   difficultyBadge: {
     backgroundColor: '#E8F5E9',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 10, // Increased from 8
+    paddingVertical: 6, // Increased from 4
     borderRadius: 12,
-    marginLeft: 8,
+    marginLeft: 10,
   },
   difficultyText: {
     color: '#4CAF50',
@@ -323,14 +418,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFF3E0',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 10, // Increased from 8
+    paddingVertical: 6, // Increased from 4
     borderRadius: 12,
     gap: 4,
   },
   pointsText: {
     color: '#FF9800',
-    fontSize: 14,
+    fontSize: 15, // Increased from 14
     fontWeight: '700',
   },
   tagContainer: {
@@ -354,23 +449,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F5F5F5',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14, // Increased from 12
+    paddingVertical: 8, // Increased from 6
     borderRadius: 20,
-    gap: 6,
+    gap: 8,
   },
   metaText: {
-    fontSize: 13,
+    fontSize: 14, // Increased from 13
     color: '#666666',
+    fontWeight: '500', // Added font weight
   },
   categoryBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14, // Increased from 12
+    paddingVertical: 8, // Increased from 6
     borderRadius: 20,
   },
   categoryBadgeText: {
     color: '#1976D2',
-    fontSize: 13,
+    fontSize: 14, // Increased from 13
     fontWeight: '600',
   },
   categoryTag: {
@@ -383,6 +479,99 @@ const styles = StyleSheet.create({
   categoryTagText: {
     color: '#4A90E2',
     fontSize: 12,
+    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-start',
+  },
+  filterDropdown: {
+    backgroundColor: '#FFFFFF',
+    marginTop: 80, // Adjusted to appear closer to search bar
+    marginHorizontal: 20,
+    borderRadius: 20, // Increased from 16
+    padding: 20, // Increased from 16
+    maxHeight: '80%', // Added to make scrollable if needed
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  filterSection: {
+    marginBottom: 16,
+  },
+  filterTitle: {
+    fontSize: 18, // Increased from 16
+    fontWeight: '700', // Increased from 600
+    color: '#333333',
+    marginBottom: 14,
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  filterOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    paddingHorizontal: 14, // Increased from 12
+    paddingVertical: 10, // Increased from 8
+    borderRadius: 20,
+    gap: 8,
+  },
+  selectedOption: {
+    backgroundColor: '#E3F2FD',
+  },
+  filterOptionText: {
+    fontSize: 14,
+    color: '#666666',
+  },
+  selectedOptionText: {
+    color: '#007AFF',
+    fontWeight: '600',
+  },
+  filterDivider: {
+    height: 1,
+    backgroundColor: '#EEEEEE',
+    marginVertical: 16,
+  },
+  // Category button styles
+  categoryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  categoryText: {
+    marginLeft: 8,
+    fontSize: 14,
+    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
+  },
+
+  // Difficulty filter styles
+  filterChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    backgroundColor: '#F5F5F5',
+  },
+  filterText: {
+    fontSize: 14,
+    color: '#666666',
+    fontWeight: '500',
+    fontFamily: 'Inter-Medium',
+  },
+  activeFilterText: {
+    color: '#FFFFFF',
     fontWeight: '600',
     fontFamily: 'Inter-SemiBold',
   },
