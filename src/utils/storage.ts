@@ -1,24 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const CREDENTIALS_KEY = '@pebblo_credentials';
+const CREDENTIALS_KEY = '@auth_credentials';
 
-interface SavedCredentials {
-  email: string;
-  password: string;
-}
-
-export const saveCredentials = async (credentials: SavedCredentials) => {
+export const saveCredentials = async (email: string, password: string) => {
   try {
-    await AsyncStorage.setItem(CREDENTIALS_KEY, JSON.stringify(credentials));
+    const credentials = JSON.stringify({ email, password });
+    await AsyncStorage.setItem(CREDENTIALS_KEY, credentials);
   } catch (error) {
     console.error('Error saving credentials:', error);
   }
 };
 
-export const loadCredentials = async (): Promise<SavedCredentials | null> => {
+export const loadCredentials = async () => {
   try {
-    const saved = await AsyncStorage.getItem(CREDENTIALS_KEY);
-    return saved ? JSON.parse(saved) : null;
+    const credentials = await AsyncStorage.getItem(CREDENTIALS_KEY);
+    return credentials ? JSON.parse(credentials) : null;
   } catch (error) {
     console.error('Error loading credentials:', error);
     return null;

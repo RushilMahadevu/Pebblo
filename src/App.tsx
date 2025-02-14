@@ -12,6 +12,7 @@ import { Session } from '@supabase/supabase-js';
 import { useFonts } from './useFonts';
 import { View, ActivityIndicator } from 'react-native';
 import AccountSettings from './screens/AccountSettings';
+import EmailLoginScreen from './EmailLoginScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -54,6 +55,7 @@ const App = () => {
           <>
             <Stack.Screen name="Home" component={HomePage} />
             <Stack.Screen name="Auth" component={AuthScreen} />
+            <Stack.Screen name="EmailLogin" component={EmailLoginScreen} />
           </>
         ) : (
           <>

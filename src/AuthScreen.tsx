@@ -1,219 +1,162 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
-import * as Animatable from 'react-native-animatable';
-import { supabase } from './lib/supabase';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Animated, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { saveCredentials, loadCredentials } from './utils/storage';
-import { AuthError } from '@supabase/supabase-js';
+import { Mail, Chrome } from 'lucide-react-native';
 
 const AuthScreen = () => {
   const navigation = useNavigation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [rememberMe, setRememberMe] = useState(true);
 
-  useEffect(() => {
-    const loadSavedCredentials = async () => {
-      const saved = await loadCredentials();
-      if (saved) {
-        setEmail(saved.email);
-        setPassword(saved.password);
-        setRememberMe(true);
-      }
-    };
-    loadSavedCredentials();
-  }, []);
-
-  const handleSignIn = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (error) throw error;
-      
-      // Save credentials if remember me is checked
-      if (rememberMe) {
-        await saveCredentials({ email, password });
-      }
-    } catch (err) {
-      const error = err as AuthError;
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignUp = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      if (error) throw error;
-      alert('Check your email for verification link!');
-    } catch (err) {
-      const error = err as AuthError;
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const renderAuthButton = (icon: React.ReactNode, text: string, isPrimary: boolean, onPress?: () => void) => (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.authButton,
+        isPrimary ? styles.primaryButton : styles.secondaryButton,
+        pressed && styles.buttonPressed
+      ]}
+    >
+      {icon}
+      <Text style={[
+        styles.buttonText,
+        isPrimary ? styles.primaryButtonText : styles.secondaryButtonText
+      ]}>
+        {text}
+      </Text>
+    </Pressable>
+  );
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity 
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={styles.backButtonText}>←</Text>
-      </TouchableOpacity>
-
-      <Animatable.View animation="fadeIn" style={styles.formContainer}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        <View style={styles.checkboxContainer}>
-          <TouchableOpacity 
-            style={styles.checkbox} 
-            onPress={() => setRememberMe(!rememberMe)}
-          >
-            <Text style={rememberMe ? styles.checkboxChecked : styles.checkboxUnchecked}>
-              {rememberMe ? '✓' : ''}
-            </Text>
-          </TouchableOpacity>
-          <Text style={styles.checkboxLabel}>Remember me</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        {/* Logo/Brand Section */}
+        <View style={styles.brandSection}>
+          <Image 
+            source={require('../assets/splash-icon.png')} 
+            style={styles.logo} 
+            resizeMode="contain"
+          />
+          <Text style={styles.brandText}>Pebblo</Text>
+            <Text style={styles.subtitle}>Micro challenges to help the world</Text>
         </View>
-        {error && <Text style={styles.error}>{error}</Text>}
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={handleSignIn}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Sign In</Text>
+
+        {/* Auth Buttons Section */}
+        <View style={styles.authSection}>
+          {renderAuthButton(
+            <Mail size={20} color="#E5E5E5" style={styles.buttonIcon} />,
+            "Continue with Email",
+            true,
+            () => navigation.navigate('EmailLogin' as never)
           )}
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.button, styles.secondaryButton]} 
-          onPress={handleSignUp}
-          disabled={loading}
-        >
-          <Text style={[styles.buttonText, styles.secondaryButtonText]}>
-            Create Account
+          {renderAuthButton(
+            <Chrome size={20} color="#E5E5E5" style={styles.buttonIcon} />,
+            "Continue with Google",
+            false
+          )}
+        </View>
+
+        {/* Terms and Privacy Section */}
+        <View style={styles.termsSection}>
+          <Text style={styles.termsText}>
+            By continuing, you agree to our{' '}
+            <Text style={styles.linkText}>Terms of Service</Text>
+            {' '}and{' '}
+            <Text style={styles.linkText}>Privacy Policy</Text>
           </Text>
-        </TouchableOpacity>
-      </Animatable.View>
-    </View>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFF',
+  },
+  content: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'space-between',
+  },
+  brandSection: {
+    alignItems: 'center',
+    marginTop: 60,
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    marginBottom: 16,
+  },
+  brandText: {
+    fontSize: 32,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: 'gray',
+    marginBottom: 32,
+  },
+  authSection: {
+    marginBottom: 32,
+    paddingHorizontal: 16,
+  },
+  authButton: {
+    flexDirection: 'row',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  formContainer: {
-    width: '100%',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    textAlign: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#111',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontSize: 16,
-    fontWeight: '600',
+  primaryButton: {
+    backgroundColor: '#1E1E1E',
+    borderWidth: 0,
   },
   secondaryButton: {
-    backgroundColor: '#fff',
+    backgroundColor: '#1E1E1E',
     borderWidth: 1,
-    borderColor: '#111',
+    borderColor: '#333333',
+  },
+  buttonPressed: {
+    transform: [{ scale: 0.98 }],
+    opacity: 0.8,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 12,
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
   },
   secondaryButtonText: {
-    color: '#111',
+    color: '#E5E5E5',
   },
-  error: {
-    color: 'red',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  checkbox: {
+  buttonIcon: {
     width: 20,
     height: 20,
-    borderWidth: 1,
-    borderColor: '#111',
-    borderRadius: 4,
-    marginRight: 8,
-    justifyContent: 'center',
+  },
+  termsSection: {
     alignItems: 'center',
+    paddingHorizontal: 32,
   },
-  checkboxChecked: {
-    color: '#111',
-    fontSize: 14,
+  termsText: {
+    textAlign: 'center',
+    color: '#999999',
+    fontSize: 13,
   },
-  checkboxUnchecked: {
-    color: 'transparent',
-  },
-  checkboxLabel: {
-    fontSize: 14,
-    color: '#666',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    padding: 10,
-    zIndex: 1,
-  },
-  backButtonText: {
-    fontSize: 24,
-    color: '#111',
+  linkText: {
+    color: '#3B82F6',
+    textDecorationLine: 'underline',
   },
 });
 
